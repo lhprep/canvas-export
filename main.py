@@ -14,7 +14,7 @@ courses = []
 file_prefix = "2019/2020"
 
 for t in terms:
-    if "2019/2020" in str(t) and "6th - Quarter 1" in str(t):
+    if "2020/2021" in str(t) and "6th - 2020-2021" in str(t):
         print(t)
         for course in canvas.get_account(1).get_courses(enrollment_term_id=t.id, include=["term"]):
             courses.append(course)
@@ -28,7 +28,7 @@ exports = []
 completed = []
 
 for course in courses:
-    exports.append((course, course.export_content("zip", skip_notifications=True)))
+    exports.append((course, course.export_content("common_cartridge", skip_notifications=True)))
 
 while len(completed) < len(exports):
     progresses = []
@@ -40,9 +40,10 @@ while len(completed) < len(exports):
                 export = course.get_content_export(export)
                 filename = f"{course.sis_course_id if course.sis_course_id else file_prefix} - {course.name}.zip"
                 filename = filename.replace("/", "~")
-                subprocess.run(["curl", "-o", filename, export.attachment.get("url")])
+                subprocess.run(["curl", "-Lo", filename, export.attachment.get("url")],
+                               stdin=None, stdout=None, stderr=None)
                 completed.append(export)
 
     print(" ".join(progresses))
-    print(" ".join(completed))
+    # print(" ".join(completed))
     time.sleep(1)
