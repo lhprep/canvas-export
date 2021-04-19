@@ -81,7 +81,7 @@ with tqdm(total=len(courses)) as pb:
                     filename = f"{course.sis_course_id + ' - ' if course.sis_course_id else ''}{course.name}.zip"
                     filename = filename.replace("/", "~")
                     filename = f"/Users/Shared/canvas-exports/{folder}/{filename}"
-                    print(filename)
+                    # print(filename)
 
                     q.put_nowait((filename, x.attachment.get("url")))
 
