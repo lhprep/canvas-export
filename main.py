@@ -78,8 +78,9 @@ with tqdm(total=len(courses)) as pb:
                 progress = canvas.get_progress(export.progress_url.split("/")[-1])
                 if progress.workflow_state == "completed":
                     x = course.get_content_export(export)
-                    filename = f"~/canvas-exports/{folder}/{course.sis_course_id + ' - ' if course.sis_course_id else ''}{course.name}.zip"
+                    filename = f"{course.sis_course_id + ' - ' if course.sis_course_id else ''}{course.name}.zip"
                     filename = filename.replace("/", "~")
+                    filename = f"~/canvas-exports/{folder}/{filename}"
 
                     q.put_nowait((filename, x.attachment.get("url")))
 
