@@ -23,8 +23,8 @@ class Worker(threading.Thread):
                 self.sleep_counter = 0
 
                 # print("Start " + filename)
-                subprocess.run(["curl", "-Lo", filename, url],
-                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                subprocess.run(["curl", "-Lo", filename, "--create-dirs", url],
+                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 self.q.task_done()
                 pb.update()
                 # print("End " + filename)
