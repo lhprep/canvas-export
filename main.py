@@ -1,12 +1,10 @@
 import os
 import queue
+import subprocess
 import threading
 import time
-import subprocess
-
 from pprint import pprint
 
-import requests
 from canvasapi import Canvas
 from tqdm import tqdm
 
@@ -45,10 +43,10 @@ canvas = Canvas("https://lhps.instructure.com/", os.getenv("CANVAS_TOKEN"))
 terms = canvas.get_account(1).get_enrollment_terms()
 courses = []
 
-file_prefix = "2019-2020"
+folder = "2019-2020/6th"
 
 for t in terms:
-    if "2020/2021" in str(t) and "6th" in str(t):
+    if "2019/2020" in str(t) and "6th" in str(t):
         pprint(t)
         for course in canvas.get_account(1).get_courses(enrollment_term_id=t.id, include=["term"]):
             courses.append(course)
@@ -80,7 +78,7 @@ with tqdm(total=len(courses)) as pb:
                 progress = canvas.get_progress(export.progress_url.split("/")[-1])
                 if progress.workflow_state == "completed":
                     x = course.get_content_export(export)
-                    filename = f"{course.sis_course_id if course.sis_course_id else file_prefix} - {course.name}.zip"
+                    filename = f"~/canvas-exports/{folder}/{course.sis_course_id + ' - ' if course.sis_course_id else ''}{course.name}.zip"
                     filename = filename.replace("/", "~")
 
                     q.put_nowait((filename, x.attachment.get("url")))
