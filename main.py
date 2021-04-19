@@ -22,12 +22,12 @@ class Worker(threading.Thread):
                 filename, url = self.q.get(timeout=3)  # 3s timeout
                 self.sleep_counter = 0
 
-                print("Start " + filename)
+                # print("Start " + filename)
                 subprocess.run(["curl", "-Lo", filename, url],
-                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 self.q.task_done()
                 pb.update()
-                print("End " + filename)
+                # print("End " + filename)
             except queue.Empty:
                 if self.sleep_counter >= 6:
                     print("***** THREAD DIED *****")
