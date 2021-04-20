@@ -3,6 +3,7 @@ import queue
 import subprocess
 import threading
 import time
+from datetime import datetime, timezone
 from pprint import pprint
 
 from canvasapi import Canvas
@@ -13,14 +14,16 @@ class Worker(threading.Thread):
     def __init__(self, q, pb, *args, **kwargs):
         self.q = q
         self.pb = pb
-        self.sleep_counter = 0
         super().__init__(*args, **kwargs)
 
     def run(self):
         while True:
             try:
                 filename, url = self.q.get(timeout=3)  # 3s timeout
-                self.sleep_counter = 0
+
+                if not filename and not url:
+                    self.q.task_done()
+                    return
 
                 # print("Start " + filename)
                 subprocess.run(["curl", "-Lo", filename, "--create-dirs", url],
@@ -29,12 +32,7 @@ class Worker(threading.Thread):
                 pb.update()
                 # print("End " + filename)
             except queue.Empty:
-                if self.sleep_counter >= 6:
-                    print("***** THREAD DIED *****")
-                    return
-                else:
-                    self.sleep_counter += 1
-                    time.sleep(5)
+                time.sleep(1)
 
 
 # Start Main Script
@@ -43,11 +41,16 @@ canvas = Canvas("https://lhps.instructure.com/", os.getenv("CANVAS_TOKEN"))
 terms = canvas.get_account(1).get_enrollment_terms()
 courses = []
 
-folder = "2019-2020/6th"
+folder = "2018-2019/MS"
+start = datetime(2018, 7, 1, tzinfo=timezone.utc)
+end = datetime(2019, 7, 1, tzinfo=timezone.utc)
+school = "MS"
+skip_dates = False
 
 for t in terms:
-    if "2019/2020" in str(t) and "6th" in str(t):
-        pprint(t)
+    # print(t)
+    if school in str(t) and (skip_dates or (t.start_at_date > start and t.end_at_date < end)):
+        print(t)
         for course in canvas.get_account(1).get_courses(enrollment_term_id=t.id, include=["term"]):
             courses.append(course)
 
@@ -86,5 +89,8 @@ with tqdm(total=len(courses)) as pb:
                     q.put_nowait((filename, x.attachment.get("url")))
 
                     completed.append(export)
+
+    for _ in range(10):
+        q.put_nowait(("", ""))
 
     q.join()
