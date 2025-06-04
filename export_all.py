@@ -55,7 +55,7 @@ q = queue.Queue()
 print("\n\n\nStarting Exports")
 with tqdm(total=len(courses)) as pb:
     for course in courses:
-        term_dir = os.path.join("./canvas-exports", folder, course.term.name)
+        term_dir = os.path.join("./canvas-exports", folder, course.term['name'])
         os.makedirs(term_dir, exist_ok=True)
 
         exports.append((course, course.export_content("common_cartridge", skip_notifications=True)))
@@ -74,7 +74,7 @@ with tqdm(total=len(courses)) as pb:
                     x = course.get_content_export(export)
                     filename = f"{course.sis_course_id + ' - ' if course.sis_course_id else ''}{course.name}.zip"
                     filename = filename.replace("/", "-")
-                    filename = os.path.join("./canvas-exports", folder, course['term']['name'], filename)
+                    filename = os.path.join("./canvas-exports", folder, course.term['name'], filename)
                     # print(filename)
 
                     q.put_nowait((filename, x.attachment.get("url")))
