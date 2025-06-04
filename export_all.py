@@ -55,7 +55,7 @@ q = queue.Queue()
 print("\n\n\nStarting Exports")
 with tqdm(total=len(courses)) as pb:
     for course in courses:
-        term_dir = os.path.join("./canvas-exports", folder, course['term']['name'])
+        term_dir = os.path.join("./canvas-exports", folder, course.term.name)
         os.makedirs(term_dir, exist_ok=True)
 
         exports.append((course, course.export_content("common_cartridge", skip_notifications=True)))
