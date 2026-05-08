@@ -1,2 +1,2 @@
-canvasapi~=2.1.0
+canvasapi @ git+https://github.com/dcanora-lhps/canvasapi.git@b2fa7a7102743767c5a519c04990cf7467b76d23
 tqdm~=4.60.0
