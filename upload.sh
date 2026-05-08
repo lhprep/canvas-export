@@ -6,6 +6,7 @@ REMOTE="canvas-drive:Spring 2026/${DATETIME}"
 
 rclone mkdir "${REMOTE}"
 rclone copy . "${REMOTE}" \
+    --exclude 'env/**' \
     --include '*.csv' \
     --include '*.json' \
     --include '*.zip' \
